@@ -1,123 +1,171 @@
-# WeChat Codex Bridge
+# WeChat Codex
 
-<p align="center">
-  <strong>Chat with Codex in WeChat, just like texting a friend</strong>
-</p>
+把手机微信变成你电脑上 Codex 的远程入口。
 
-<p align="center">
-  <a href="README_en.md"><img src="https://img.shields.io/badge/Lang-English-lightgrey?style=flat-square" alt="English"></a>
-</p>
+你在微信里发消息，家里的 Mac 负责接收、调用本机 `codex exec --json`、再把结果发回微信。代码、文件、账号凭证都留在本机；手机只是一个轻量遥控器。
 
-扫码绑定微信后，你的微信里会多出一个好友。给它发消息，消息会自动转发给你电脑上运行的 Codex，回复也会实时推送到微信。支持文字、图片、语音、文件的收发。
+[English](README_en.md)
 
-<img width="3018" height="1216" alt="ScreenShot_2026-06-10_211251_410" src="https://github.com/user-attachments/assets/2ba4c53b-9c63-4ffd-bd0a-71935a6eabec" />
+## 现在能做什么
 
-## 核心亮点
-| | |
-|---|---|
-| **扫码即用** | 不用注册账号，不用部署服务器。微信扫码绑定，一分钟搞定。数据全在本地，隐私有保障。 |
-| **消息不刷屏** | 只推送核心信息——进度、结果、关键决策。工具调用、中间过程等噪音自动过滤，阅读体验清爽。 |
-| **"对方正在输入中..."** | Codex 在处理任务时，微信顶部会显示输入状态，随时感知它在干活。 |
-| **电脑手机体验一致** | 手机端和电脑端 Codex 行为完全相同——同样的编排逻辑、同样的输出效果。不是两个割裂的 AI。 |
-| **文件双向收发** | 发图片、Word、PDF 给 Codex 分析；Codex 生成的文件也会直接推送到微信，不用回到电脑前查看。 |
-| **超时安抚** | 任务超过 5 分钟没响应？它会自动发一条消息告诉你还在干，不会让你对着空白聊天框干等。 |
+| 能力 | 说明 |
+|------|------|
+| 微信扫码绑定 | 扫码后微信里会出现一个可对话的 bot |
+| 调用本机 Codex | 后台进程把微信消息转成 `codex exec --json` 请求 |
+| 工作目录可切换 | 用 `/cwd` 指定 Codex 处理哪个项目 |
+| 支持图片和文件 | 图片/文件会下载到本机临时目录，再交给 Codex 分析 |
+| 文件回传 | Codex 回复里出现本地文件路径时，可自动推送常见文件类型到微信 |
+| 后台守护 | macOS 用 launchd 托管，支持开机自启和崩溃重启 |
+| 会话管理 | 支持 `/clear`、`/compact`、`/history`、`/undo`、`/stop` |
 
-## 快速安装
+## 工作方式
 
-**本地安装**
+```text
+手机微信
+   │
+   │  文本 / 图片 / 文件
+   ▼
+ilink Bot API
+   │
+   │  长轮询收消息，HTTP 发回复
+   ▼
+Node.js bridge
+   │
+   │  spawn 本机 Codex CLI
+   ▼
+codex exec --json
+   │
+   │  读写本机项目文件
+   ▼
+你的电脑工作区
+```
+
+桥接层不替 Codex 做推理，也不把项目上传到第三方服务。它只负责微信收发、文件中转、会话状态和守护进程。
+
+## 快速开始
+
+### 1. 准备环境
+
+需要：
+
+- macOS 或 Linux
+- 个人微信账号
+- Codex CLI 已登录，`codex doctor` 可通过
+- Node.js 18+
+
+当前仓库里已经放了一个本地 Node 运行时到 `.local-node/`，如果系统没有 Node，可以先这样进入环境：
+
+```bash
+cd /Users/xiao/projects/wechatcodex
+export PATH=/Users/xiao/projects/wechatcodex/.local-node/bin:$PATH
+```
+
+### 2. 安装依赖
 
 ```bash
 cd /Users/xiao/projects/wechatcodex
 npm install
 ```
 
-## 快速开始
-
-### 1. 扫码绑定
+### 3. 扫码绑定微信
 
 ```bash
-cd /Users/xiao/projects/wechatcodex
 npm run setup
 ```
 
-弹出二维码，用微信扫码。
+终端会打开或输出二维码图片。用微信扫码并确认后，会生成账号凭证到：
 
-### 2. 启动服务
+```text
+~/.wechat-codex/accounts/
+```
+
+### 4. 启动后台服务
 
 ```bash
 npm run daemon -- start
+npm run daemon -- status
 ```
 
-macOS 下自动注册 launchd，开机自启、崩溃自动重启。
+macOS 会注册 launchd 服务，后续可直接后台运行。
 
-### 3. 开始聊天
+## 常用命令
 
-打开微信，给你新出现的那个"好友"发条消息试试。
-
-### 管理服务
+### 本机管理
 
 ```bash
-npm run daemon -- status   # 查看运行状态
-npm run daemon -- stop     # 停止服务
-npm run daemon -- restart  # 重启服务（更新代码后使用）
-npm run daemon -- logs     # 查看日志
+npm run daemon -- status    # 查看状态
+npm run daemon -- logs      # 查看日志
+npm run daemon -- restart   # 重启服务
+npm run daemon -- stop      # 停止服务
 ```
 
-## 微信端命令
+### 微信里发送
 
-直接在微信聊天中发送即可：
-
-| 命令 | 说明 |
+| 命令 | 作用 |
 |------|------|
-| `/help` | 显示帮助 |
-| `/clear` | 清除当前会话，开始新对话 |
-| `/stop` | 停止当前任务 |
+| `/help` | 查看帮助 |
+| `/status` | 查看当前工作目录、模型、会话状态 |
+| `/cwd <路径>` | 切换 Codex 工作目录 |
 | `/model <名称>` | 切换 Codex 模型 |
-| `/prompt <内容>` | 设置系统提示词（如"用中文回答"） |
-| `/cwd <路径>` | 切换工作目录 |
-| `/skills` | 查看已安装的 Skill |
-| `/status` | 查看当前会话状态 |
-| `/history [数量]` | 查看最近对话记录 |
-| `/compact` | 压缩上下文，开始新 CLI 会话 |
-| `/reset` | 完全重置（包括工作目录等设置） |
-| `/undo [数量]` | 撤销最近几条对话 |
-| `/<skill> [参数]` | 触发任意已安装的 Skill |
-
-## 工作原理
-
-```
-微信（手机） ←→ ilink Bot API ←→ Node.js 守护进程 ←→ Codex CLI（本地）
-```
-
-守护进程通过长轮询监听微信消息，转发给本地 `codex exec --json` 处理，回复推送回微信。全程跑在你自己电脑上。
-
-## 后续计划
-
-- **消息队列优化** — 连续发多条指令时，回复容易串。正在研究更好的队列策略，也欢迎讨论。
-- **电脑休眠不中断** — 利用 macOS 的 `caffeinate` 命令阻止系统睡眠，合上盖子也能响应微信消息。
-- **接续电脑会话** — 在电脑上聊了很久，出门想接着聊。计划支持从当前电脑端的 Codex 会话直接续聊，工作空间和上下文保持一致。
-
-## 前置条件
-
-- Node.js >= 18
-- macOS 或 Linux
-- 个人微信账号
-- 已安装 Codex CLI 并完成认证（本机需能执行 `codex doctor`）
-
-> **提示：** 如果后台服务找不到 Codex CLI，可设置 `CODEX_BIN=/Applications/Codex.app/Contents/Resources/codex`。
+| `/prompt <内容>` | 设置系统提示词 |
+| `/clear` | 清除当前会话 |
+| `/compact` | 开启新的 Codex 会话，保留聊天历史 |
+| `/history [数量]` | 查看最近聊天记录 |
+| `/undo [数量]` | 撤销最近几条历史 |
+| `/stop` | 停止当前任务 |
+| `/send <路径>` | 从电脑发送本地文件到微信 |
 
 ## 数据目录
 
-所有数据存储在 `~/.wechat-codex/`：
-
-```
+```text
 ~/.wechat-codex/
 ├── accounts/       # 微信账号凭证
-├── config.json     # 全局配置
-├── sessions/       # 会话数据
-└── logs/           # 运行日志（每日轮转，保留 30 天）
+├── config.json     # 默认工作目录、模型、系统提示词
+├── sessions/       # 会话状态和聊天历史
+├── pending/        # 因微信限流暂存的待发送内容
+└── logs/           # bridge-YYYY-MM-DD.log、stdout/stderr
 ```
 
-## License
+这些文件只在本机。不要把 `~/.wechat-codex/accounts/` 上传到任何仓库。
 
-[MIT](LICENSE)
+## Codex 可执行文件
+
+如果后台服务找不到 `codex`，设置 `CODEX_BIN`：
+
+```bash
+export CODEX_BIN=/Applications/Codex.app/Contents/Resources/codex
+npm run daemon -- restart
+```
+
+守护脚本默认已经把这个目录加入 PATH：
+
+```text
+/Applications/Codex.app/Contents/Resources
+```
+
+## 验证
+
+```bash
+npm run build
+npm test
+```
+
+也可以直接在微信里发：
+
+```text
+/status
+```
+
+或：
+
+```text
+看一下当前工作目录下有哪些项目
+```
+
+如果日志里能看到 `Starting Codex CLI query` 和 `Text message sent`，说明链路已经通了。
+
+## 说明
+
+这个项目的第一版目标很朴素：让手机稳定连到本机 Codex。它保留了微信收发、文件处理、队列和守护进程能力，把原来的 Claude CLI 后端替换成 Codex CLI。
+
+License: [MIT](LICENSE)

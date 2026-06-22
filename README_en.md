@@ -1,134 +1,163 @@
-# WeChat Codex Bridge
+# WeChat Codex
 
-<p align="center">
-  <strong>Chat with Codex in WeChat, just like texting a friend</strong>
-</p>
+Use WeChat on your phone as a remote control for Codex running on your computer.
 
-<p align="center">
-  <a href="README.md"><img src="https://img.shields.io/badge/Lang-中文-lightgrey?style=flat-square" alt="中文"></a>
-</p>
+Messages sent in WeChat are received by a local Node.js bridge, forwarded to `codex exec --json`, and sent back to WeChat. Your code, files, credentials, and session data stay on your machine.
 
-Scan a QR code to bind your WeChat, and a new "friend" appears in your contacts. Send it a message — it gets forwarded to Codex running on your computer, and the reply streams back to WeChat in real time. Supports text, images, voice, and files.
+[中文](README.md)
 
----
+## What It Does
 
-## Highlights
+| Feature | Description |
+|---------|-------------|
+| WeChat QR binding | Scan once and talk to a bot from WeChat |
+| Local Codex execution | Calls `codex exec --json` on your computer |
+| Workspace switching | Use `/cwd` to choose which project Codex should work in |
+| Image and file input | Downloads WeChat media locally and passes it to Codex |
+| File delivery | Pushes common generated file types back to WeChat when paths appear in replies |
+| Background daemon | launchd on macOS, systemd or direct mode on Linux |
+| Session tools | `/clear`, `/compact`, `/history`, `/undo`, `/stop` |
 
-| | |
-|---|---|
-| **Scan and go** | No account signup, no server deployment. Scan a QR code and you're done in a minute. All data stays on your machine. |
-| **Clean messages** | Only key info gets pushed — progress, results, key decisions. Tool calls and intermediate noise are filtered out automatically. |
-| **"Typing..." indicator** | WeChat shows a typing indicator while Codex is working, so you always know it's on it. |
-| **Consistent experience** | Mobile and desktop Codex behave identically — same orchestration, same output. Not two disconnected AIs. |
-| **Two-way files** | Send images, Word docs, PDFs for Codex to analyze. Files Codex generates get pushed directly to WeChat — no need to go back to your computer. |
-| **Timeout reassurance** | Task taking longer than 5 minutes? You'll get an automatic message letting you know it's still working. |
+## Architecture
 
----
+```text
+WeChat on phone
+   │
+   │  text / images / files
+   ▼
+ilink Bot API
+   │
+   │  long polling + HTTP replies
+   ▼
+Node.js bridge
+   │
+   │  spawn local Codex CLI
+   ▼
+codex exec --json
+   │
+   │  reads and writes local workspace files
+   ▼
+Your computer
+```
 
-## Install
+The bridge does not perform model reasoning. It only handles WeChat I/O, media transfer, local session state, and daemon management.
 
-**Local install**
+## Quick Start
+
+### 1. Requirements
+
+- macOS or Linux
+- A personal WeChat account
+- Codex CLI installed and authenticated (`codex doctor` should pass)
+- Node.js 18+
+
+This repository currently includes a local Node runtime in `.local-node/`. If Node is not installed globally, enter the environment with:
+
+```bash
+cd /Users/xiao/projects/wechatcodex
+export PATH=/Users/xiao/projects/wechatcodex/.local-node/bin:$PATH
+```
+
+### 2. Install
 
 ```bash
 cd /Users/xiao/projects/wechatcodex
 npm install
 ```
 
-## Quick Start
-
-### 1. Bind WeChat
+### 3. Bind WeChat
 
 ```bash
-cd /Users/xiao/projects/wechatcodex
 npm run setup
 ```
 
-A QR code will pop up — scan it with WeChat.
+Scan the QR code with WeChat. Account credentials are stored locally under:
 
-### 2. Start the service
+```text
+~/.wechat-codex/accounts/
+```
+
+### 4. Start the daemon
 
 ```bash
 npm run daemon -- start
+npm run daemon -- status
 ```
 
-On macOS, this registers a launchd agent for auto-start on boot and auto-restart on crash.
+On macOS, the daemon is registered as a launchd agent.
 
-### 3. Start chatting
+## Commands
 
-Open WeChat and send a message to your new "friend".
-
-### Manage the service
+### Local daemon
 
 ```bash
-npm run daemon -- status   # Check if running
-npm run daemon -- stop     # Stop the service
-npm run daemon -- restart  # Restart (after code updates)
-npm run daemon -- logs     # View recent logs
+npm run daemon -- status
+npm run daemon -- logs
+npm run daemon -- restart
+npm run daemon -- stop
 ```
 
----
+### In WeChat
 
-## WeChat Commands
-
-Send these directly in the WeChat chat:
-
-| Command | Description |
-|---------|-------------|
-| `/help` | Show available commands |
-| `/clear` | Clear current session, start fresh |
-| `/stop` | Stop current task |
+| Command | Purpose |
+|---------|---------|
+| `/help` | Show help |
+| `/status` | Show cwd, model, and session state |
+| `/cwd <path>` | Switch Codex working directory |
 | `/model <name>` | Switch Codex model |
-| `/prompt <text>` | Set a system prompt (e.g. "reply in Chinese") |
-| `/cwd <path>` | Switch working directory |
-| `/skills` | List installed Skills |
-| `/status` | View current session state |
-| `/history [n]` | View recent chat history |
-| `/compact` | Compact context, start a new CLI session |
-| `/reset` | Full reset including working directory |
-| `/undo [n]` | Remove last N messages from history |
-| `/<skill> [args]` | Trigger any installed Skill |
-
----
-
-## How It Works
-
-```
-WeChat (phone) ←→ ilink Bot API ←→ Node.js daemon ←→ Codex CLI (local)
-```
-
-The daemon long-polls WeChat for new messages, forwards them to local `codex exec --json`, and sends replies back to WeChat. Everything runs on your own machine.
-
----
-
-## Roadmap
-
-- **Message queue optimization** — Consecutive messages can produce mixed-up replies. Working on a better queuing strategy. Ideas welcome.
-- **Prevent sleep** — Use macOS `caffeinate` to keep the system awake, so closing the lid doesn't interrupt the service.
-- **Resume desktop session** — Chat on your computer for a while, then continue the same session from WeChat on the go. Same workspace, same context.
-
----
-
-## Prerequisites
-
-- Node.js >= 18
-- macOS or Linux
-- A personal WeChat account
-- Codex CLI installed and authenticated (`codex doctor` should pass locally)
-
-> **Note:** If the daemon cannot find Codex CLI, set `CODEX_BIN=/Applications/Codex.app/Contents/Resources/codex`.
+| `/prompt <text>` | Set a system prompt |
+| `/clear` | Clear the current session |
+| `/compact` | Start a new Codex session while keeping chat history |
+| `/history [n]` | Show recent chat history |
+| `/undo [n]` | Remove recent history entries |
+| `/stop` | Stop the current task |
+| `/send <path>` | Send a local file from the computer to WeChat |
 
 ## Data Directory
 
-All data is stored in `~/.wechat-codex/`:
-
-```
+```text
 ~/.wechat-codex/
 ├── accounts/       # WeChat account credentials
-├── config.json     # Global config
-├── sessions/       # Session data
-└── logs/           # Rotating logs (daily, 30-day retention)
+├── config.json     # cwd, model, system prompt
+├── sessions/       # session state and chat history
+├── pending/        # queued messages when WeChat rate limits sending
+└── logs/           # bridge logs and stdout/stderr
 ```
 
-## License
+Do not commit or share files under `~/.wechat-codex/accounts/`.
 
-[MIT](LICENSE)
+## Codex Binary
+
+If the daemon cannot find `codex`, set `CODEX_BIN`:
+
+```bash
+export CODEX_BIN=/Applications/Codex.app/Contents/Resources/codex
+npm run daemon -- restart
+```
+
+The daemon script already adds this directory to PATH by default:
+
+```text
+/Applications/Codex.app/Contents/Resources
+```
+
+## Verify
+
+```bash
+npm run build
+npm test
+```
+
+Then send this in WeChat:
+
+```text
+/status
+```
+
+If the logs show `Starting Codex CLI query` and `Text message sent`, the bridge is working.
+
+## Notes
+
+This first version focuses on one thing: letting your phone reliably reach local Codex. It keeps the WeChat transport, media handling, queues, and daemon manager, while replacing the original CLI backend with Codex CLI.
+
+License: [MIT](LICENSE)
