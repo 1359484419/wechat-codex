@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.log
+.env
+.wechat-codex/
+.local-node/
+.codex/
+CLAUDE.md
