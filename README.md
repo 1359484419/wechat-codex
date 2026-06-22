@@ -168,4 +168,3 @@ npm test
 
 这个项目的第一版目标很朴素：让手机稳定连到本机 Codex。它保留了微信收发、文件处理、队列和守护进程能力，把原来的 Claude CLI 后端替换成 Codex CLI。
 
-License: [MIT](LICENSE)
