@@ -1,0 +1,105 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">WeChat Codex</title>
+  <desc id="desc">A phone running a chat interface connects through a local bridge to Codex CLI on a laptop.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1600" y2="900" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F8FBF7"/>
+      <stop offset="0.54" stop-color="#F2F7F4"/>
+      <stop offset="1" stop-color="#EEF4FF"/>
+    </linearGradient>
+    <linearGradient id="phone" x1="255" y1="142" x2="560" y2="700" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#20262F"/>
+      <stop offset="1" stop-color="#11161D"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="293" y1="182" x2="523" y2="662" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FCFFFD"/>
+      <stop offset="1" stop-color="#ECF8F1"/>
+    </linearGradient>
+    <linearGradient id="laptop" x1="945" y1="185" x2="1348" y2="655" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2A3342"/>
+      <stop offset="1" stop-color="#111927"/>
+    </linearGradient>
+    <linearGradient id="terminal" x1="984" y1="226" x2="1308" y2="610" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#101826"/>
+      <stop offset="1" stop-color="#0B111B"/>
+    </linearGradient>
+    <linearGradient id="flow" x1="575" y1="438" x2="976" y2="438" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#16A34A"/>
+      <stop offset="0.48" stop-color="#2DD4BF"/>
+      <stop offset="1" stop-color="#6366F1"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="22" stdDeviation="28" flood-color="#152033" flood-opacity="0.16"/>
+    </filter>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="28"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" rx="48" fill="url(#bg)"/>
+  <circle cx="332" cy="180" r="150" fill="#22C55E" opacity="0.10" filter="url(#soft)"/>
+  <circle cx="1230" cy="212" r="180" fill="#6366F1" opacity="0.10" filter="url(#soft)"/>
+  <circle cx="845" cy="704" r="210" fill="#14B8A6" opacity="0.08" filter="url(#soft)"/>
+
+  <text x="800" y="104" text-anchor="middle" fill="#111827" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="58" font-weight="750" letter-spacing="0">WeChat Codex</text>
+  <text x="800" y="153" text-anchor="middle" fill="#4B5563" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="24" font-weight="500" letter-spacing="0">Phone to Local Codex</text>
+
+  <!-- Phone -->
+  <g filter="url(#shadow)">
+    <rect x="248" y="164" width="324" height="594" rx="54" fill="url(#phone)"/>
+    <rect x="278" y="198" width="264" height="526" rx="36" fill="url(#screen)"/>
+    <rect x="362" y="179" width="96" height="12" rx="6" fill="#0B111B"/>
+    <circle cx="410" cy="742" r="12" fill="#293241"/>
+  </g>
+  <g font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif">
+    <rect x="308" y="234" width="204" height="46" rx="23" fill="#16A34A"/>
+    <text x="410" y="264" text-anchor="middle" fill="white" font-size="20" font-weight="700">WeChat</text>
+    <rect x="315" y="326" width="145" height="48" rx="22" fill="#DCFCE7"/>
+    <rect x="360" y="392" width="142" height="48" rx="22" fill="#FFFFFF"/>
+    <rect x="315" y="458" width="176" height="48" rx="22" fill="#DCFCE7"/>
+    <rect x="355" y="544" width="156" height="62" rx="24" fill="#FFFFFF"/>
+    <circle cx="335" cy="350" r="7" fill="#16A34A"/>
+    <circle cx="482" cy="416" r="7" fill="#94A3B8"/>
+    <circle cx="335" cy="482" r="7" fill="#16A34A"/>
+    <text x="352" y="356" fill="#166534" font-size="18" font-weight="650">/status</text>
+    <text x="386" y="422" fill="#334155" font-size="18" font-weight="650">Codex ready</text>
+    <text x="352" y="488" fill="#166534" font-size="18" font-weight="650">改 README</text>
+    <text x="382" y="570" fill="#334155" font-size="18" font-weight="650">done</text>
+  </g>
+
+  <!-- Bridge -->
+  <path d="M595 438C675 371 755 371 835 438C882 477 925 485 980 452" stroke="url(#flow)" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="618" cy="421" r="13" fill="#16A34A"/>
+  <circle cx="790" cy="414" r="13" fill="#2DD4BF"/>
+  <circle cx="956" cy="461" r="13" fill="#6366F1"/>
+  <g filter="url(#shadow)">
+    <rect x="646" y="475" width="304" height="132" rx="30" fill="#FFFFFF" stroke="#E5E7EB"/>
+    <text x="798" y="522" text-anchor="middle" fill="#111827" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="24" font-weight="760">Local Bridge</text>
+    <text x="798" y="560" text-anchor="middle" fill="#4B5563" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="18" font-weight="550">WeChat I/O · files · sessions</text>
+  </g>
+
+  <!-- Laptop -->
+  <g filter="url(#shadow)">
+    <rect x="944" y="186" width="428" height="306" rx="36" fill="url(#laptop)"/>
+    <rect x="982" y="226" width="352" height="226" rx="20" fill="url(#terminal)"/>
+    <path d="M884 522H1432L1490 625C1499 641 1488 660 1470 660H846C828 660 817 641 826 625L884 522Z" fill="#D9E1EC"/>
+    <path d="M1038 522H1278L1305 574H1011L1038 522Z" fill="#BFC9D7"/>
+    <rect x="826" y="625" width="664" height="36" rx="18" fill="#B4BECC"/>
+  </g>
+  <g font-family="JetBrains Mono, SFMono-Regular, Menlo, Consolas, monospace">
+    <circle cx="1014" cy="253" r="7" fill="#F87171"/>
+    <circle cx="1038" cy="253" r="7" fill="#FBBF24"/>
+    <circle cx="1062" cy="253" r="7" fill="#34D399"/>
+    <text x="1012" y="300" fill="#A7F3D0" font-size="20" font-weight="650">$ codex exec --json</text>
+    <text x="1012" y="342" fill="#E5E7EB" font-size="18">workspace: ~/projects</text>
+    <text x="1012" y="384" fill="#93C5FD" font-size="18">event: thread.started</text>
+    <text x="1012" y="426" fill="#C4B5FD" font-size="18">item: agent_message</text>
+  </g>
+
+  <!-- Footer labels -->
+  <g font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="20" font-weight="700">
+    <text x="410" y="810" text-anchor="middle" fill="#166534">WeChat on phone</text>
+    <text x="798" y="810" text-anchor="middle" fill="#0F766E">Node.js daemon</text>
+    <text x="1158" y="810" text-anchor="middle" fill="#3730A3">Local Codex CLI</text>
+  </g>
+</svg>

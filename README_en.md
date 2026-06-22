@@ -6,6 +6,8 @@ Messages sent in WeChat are received by a local Node.js bridge, forwarded to `co
 
 [中文](README.md)
 
+![WeChat Codex hero](assets/readme-hero.svg)
+
 ## What It Does
 
 | Feature | Description |
@@ -159,4 +161,3 @@ If the logs show `Starting Codex CLI query` and `Text message sent`, the bridge 
 ## Notes
 
 This first version focuses on one thing: letting your phone reliably reach local Codex. It keeps the WeChat transport, media handling, queues, and daemon manager, while replacing the original CLI backend with Codex CLI.
-
